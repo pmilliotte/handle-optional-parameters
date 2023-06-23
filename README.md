@@ -17,21 +17,33 @@ Head to the [motivation](./doc/motivation.md) documentation for more context.
 To use the construct, instanciate it with whatever data processing as if you wanted to apply it on a JsonPath `$.value`. for example, if you want to transform every object values into a 1-item array:
 
 ```typescript
-const processObjectValuesTask = new HandleOptionalParameters(
-    scope,
-    "Handle optional parameters",
-    {
-        requiredProperties: ["requiredProperty"],
-        optionalProperties: ["optionalProperty1", "optionalProperty2"],
-        dataProcessing: "States.Array($.value)",
-    }
+const transformInputValuesTo1ItemArraysTask = new HandleOptionalParameters(
+  scope,
+  "Handle optional parameters",
+  {
+    requiredProperties: ["requiredProperty"],
+    optionalProperties: ["optionalProperty1", "optionalProperty2"],
+    // Apply States.Array intrinsinc function on every input values:
+    dataProcessing: "States.Array($.value)",
+    // Other examples:
+
+    // Encode every input values and return the object with same input keys but with encoded values:
+    // dataProcessing: "States.Base64Encode($.value)",
+
+    // Concatenate the value with the property name, with the JsonPath $.propertyName:
+    // dataProcessing: "States.Format('Current key is {} and associated value is {}.', $.propertyName, $.value)",
+  }
 );
 
 new StateMachine(
-    scope,
-    "State machine using HandleOptionalParameters construct",
-    {
-        definition: processObjectValuesTask,
-    }
+  scope,
+  "State machine using HandleOptionalParameters construct",
+  {
+    definition: processObjectValuesTask,
+  }
 );
 ```
+
+It will provision the following tasks:
+
+![Execution breakdown](doc/assets/execution_breakdown.png)
